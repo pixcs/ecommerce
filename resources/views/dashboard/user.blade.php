@@ -94,6 +94,7 @@
                 </div>
                 <div id="product-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 </div>
+                <div id="product-error-message"></div>
             </main>
 
             <script>
@@ -108,6 +109,7 @@
                             },
                             success: (res) => {
                                 console.log("loaded product:", res);
+                                $('#product-error-message').empty();
                                 res.forEach(product => productDisplay(product));
 
                                 $("#search-input").keyup(() => {
@@ -135,6 +137,12 @@
                             },
                             error: (err) => {
                                 console.error(err);
+                                $('#product-error-message').append(`
+                                    <div>
+                                        <p class="text-rose-500 text-lg text-center font-bold mt-10">Sorry, You can't view the data.</p>
+                                        <p class="text-rose-500 text-base text-center font-bold"> 403 (Forbidden) ${err.responseJSON.message}</p>
+                                    </div>
+                                `);
                             }
                         })
                     }

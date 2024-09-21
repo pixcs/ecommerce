@@ -25,8 +25,8 @@ Route::group(['prefix' => 'home'], function () {
     Route::get('/products/{id}', 'ProductsController@show')->middleware('permission:products-read');
     Route::post('/products/update-form/{id}', 'ProductsController@updateForm')->middleware('permission:products-update');
     Route::delete('/products/delete', 'ProductsController@destroy')->middleware('permission:products-delete');
-    Route::get('/products', 'ProductsController@getProducts')->middleware('permission:users-read')->name('get.products');
-    Route::post('/products/filtered', 'ProductsController@filtered')->middleware('permission:users-read')->name('filtered.products');
+    Route::get('/products', 'ProductsController@getProducts')->middleware('permission:products-read')->name('get.products');
+    Route::post('/products/filtered', 'ProductsController@filtered')->middleware('permission:products-read')->name('filtered.products');
 
     Route::get('/orders/get', 'OrdersController@get')->middleware('permission:orders-read')->name('get.orders');
     Route::post('/orders/store', 'OrdersController@store')->middleware('permission:orders-create')->name('store.orders');

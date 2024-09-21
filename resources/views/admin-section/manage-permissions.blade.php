@@ -1,25 +1,29 @@
 <div id="manage-permissions-section">
     <h1 class="text-2xl p-2 font-bold my-2">Manage Permissions</h1>
-    <button id="user-permission-btn"
-        {{Auth::user()->hasPermission(['permissions-create']) ? '' : "disabled" }}
-        class="{{Auth::user()->hasPermission(['permissions-create']) ? 'bg-indigo-950 hover:bg-rose-600 hover:text-white hover:scale-105' : " bg-gray-500 opacity-35 cursor-not-allowed" }} text-white w-full my-2 justify-center rounded-md px-3 py-2 text-sm font-semibold rounded-md shadow-md transition duration-300 sm:ml-3 sm:w-auto">Add
-        Privilege
-    </button>
+    @if (Auth::user()->hasPermission(['permissions-create']))
+        <button id="user-permission-btn"
+            class="text-white w-full my-2 justify-center rounded-md px-3 py-2 text-sm font-semibold rounded-md bg-indigo-950 hover:bg-rose-600 hover:text-white hover:scale-105 shadow-md transition duration-300 sm:ml-3 sm:w-auto">Add
+            Privilege
+        </button>
+    @endif
     <div class="container">
         <table id="manage-permissions-table" class="w-full">
             <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Display Name</th>
-                    <th>Description</th>
-                    <th>Privilege</th>
-                    <th>Actions</th>
-                </tr>
+                @if (Auth::user()->hasPermission(['permissions-create']))
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Display Name</th>
+                        <th>Description</th>
+                        <th>Privilege</th>
+                        <th>Actions</th>
+                    </tr>
+                @endif
             </thead>
-            <tbody id="manage-permissions-container">
+            <tbody>
             </tbody>
         </table>
+        <div id="manage-permissions-error-container"></div>
     </div>
 
     {{-- Add Permission Modal --}}
@@ -158,7 +162,6 @@
 
 <script>
     $(document).ready(() => {
-        new DataTable('#manage-permissions-table');
 
         function renderTable(responseData) {
             if ($.fn.DataTable.isDataTable('#manage-permissions-table')) {
@@ -210,10 +213,18 @@
             url: "{{ route('get.permissions') }}",
             success: (response) => {
                 console.log(response);
+                new DataTable('#manage-permissions-table');
+                $('#manage-permissions-error-container').empty();
                 renderTable(response);
             },
             error: (err) => {
                 console.error(err);
+                $('#manage-permissions-error-container').append(`
+                     <div>
+                        <p class="text-rose-500 text-lg text-center font-bold mt-10"> 403 (Forbidden) ${err.responseJSON.message}</p>
+                        <p class="text-rose-500 text-base text-center font-bold">Contact your Super Admin to gain access to this data.</p>
+                    </div>
+                `);
             }
         });
 

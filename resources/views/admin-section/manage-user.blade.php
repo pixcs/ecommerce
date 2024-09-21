@@ -1,28 +1,31 @@
 <div id="manage-user-section">
     <h1 class="text-2xl p-2 font-bold my-2">Manage User</h1>
-        <button id="add-user-btn"
-            {{Auth::user()->hasPermission(['users-create']) ? '' : "disabled" }}
-            class="{{Auth::user()->hasPermission(['users-create']) ? 'bg-indigo-950 hover:bg-rose-600 hover:text-white hover:scale-105' : " bg-gray-500 opacity-35 cursor-not-allowed" }} text-white w-full my-2 justify-center rounded-md px-3 py-2 text-sm font-semibold rounded-md shadow-md transition duration-300 sm:ml-3 sm:w-auto">
-            Add User
-        </button>
-
+        @if (Auth::user()->hasPermission(['users-create']))
+            <button id="add-user-btn"
+                class="text-white w-full my-2 justify-center rounded-md px-3 py-2 text-sm font-semibold rounded-md bg-indigo-950 hover:bg-rose-600 hover:text-white hover:scale-105 shadow-md transition duration-300 sm:ml-3 sm:w-auto">
+                Add User
+            </button>
+        @endif
     <div class="container">
         <table id="manage-user-table" class="w-full">
             <thead>
-                <tr>
-                    <th>Name </th>
-                    <th>Email Address</th>
-                    <th>Phone Number</th>
-                    <th>Complete Address</th>
-                    <th>E-Wallet</th>
-                    <th>Roles</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
+                @if (Auth::user()->hasPermission(['users-read']))
+                    <tr>
+                        <th>Name </th>
+                        <th>Email Address</th>
+                        <th>Phone Number</th>
+                        <th>Complete Address</th>
+                        <th>E-Wallet</th>
+                        <th>Roles</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                @endif
             </thead>
-            <tbody id="manage-user-container">
+            <tbody>
             </tbody>
         </table>
+        <div id="manage-user-error-container"></div>
     </div>
 
 
@@ -184,7 +187,6 @@
 
 <script>
     $(document).ready(() => {
-        new DataTable('#manage-user-table');
 
         function renderTable(responseData) {
             if ($.fn.DataTable.isDataTable('#manage-user-table')) {
@@ -238,10 +240,18 @@
             url: "{{ route('get.users') }}",
             success: (res) => {
                 console.log("Accounts: ", res);
+                new DataTable('#manage-user-table');
+                $('#manage-user-error-container').empty();
                 renderTable(res);
             },
             error: (err) => {
                 console.error(err);
+                $('#manage-user-error-container').append(`
+                    <div>
+                        <p class="text-rose-500 text-lg text-center font-bold mt-10"> 403 (Forbidden) ${err.responseJSON.message}</p>
+                        <p class="text-rose-500 text-base text-center font-bold">Contact your Super Admin to gain access to this data.</p>
+                    </div>
+                `);
             }
         });
 
