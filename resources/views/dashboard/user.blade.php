@@ -95,6 +95,8 @@
                 <div id="product-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 </div>
                 <div id="product-error-message"></div>
+                
+                @include('user-section.chat')
             </main>
 
             <script>
